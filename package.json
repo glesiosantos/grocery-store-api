@@ -5,6 +5,9 @@
   "repository": "git@github.com:glesiosantos/grocery-store-api.git",
   "author": "Glêsio Santos <glesioss@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "prepare": "husky install" 
+  },
   "devDependencies": {
     "@types/node": "^20.8.6",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
@@ -15,5 +18,9 @@
     "eslint-plugin-promise": "^6.0.0",
     "git-commit-msg-linter": "^5.0.4",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1"
   }
 }
