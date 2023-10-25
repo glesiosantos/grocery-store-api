@@ -42,4 +42,18 @@ describe('Name of the group', () => {
     expect(response.statusCode).toBe(400)
     expect(response.body).toEqual(new Error('Missing param: password'))
   })
+
+  it('should return 400 when password confirmation is not provided', async () => {
+    const sut = new SignUpController()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password'
+      }
+    }
+    const response = await sut.handle(httpRequest)
+    expect(response.statusCode).toBe(400)
+    expect(response.body).toEqual(new Error('Missing param: passwordConfirmation'))
+  })
 })
