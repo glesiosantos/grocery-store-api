@@ -1,11 +1,11 @@
 export class SignUpController {
   async handle(httpRequest: any): Promise<any> {
-    if (!httpRequest.body.name) {
-      return { statusCode: 400, body: new Error('Missing param: name') }
-    }
+    const requiredField = ['name', 'email', 'password']
 
-    if (!httpRequest.body.email) {
-      return { statusCode: 400, body: new Error('Missing param: email') }
+    for (const field of requiredField) {
+      if (!httpRequest.body[field]) {
+        return { statusCode: 400, body: new Error(`Missing param: ${field}`) }
+      }
     }
   }
 }
