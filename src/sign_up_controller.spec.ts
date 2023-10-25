@@ -12,5 +12,6 @@ describe('Name of the group', () => {
     }
     const response = await sut.handle(httpRequest)
     expect(response.statusCode).toBe(400)
+    expect(response.body).toEqual(new Error('Missing param: name'))
   })
 })
