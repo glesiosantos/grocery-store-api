@@ -1,3 +1,6 @@
+import { InvalidParamError } from '../errors/invalid_param_error'
+import { MissingParamError } from '../errors/missing_param_error'
+import { badRequest } from '../helpers/http/http_helpers'
 import { SignUpController } from './sign_up_controller'
 
 describe('Name of the group', () => {
@@ -11,8 +14,7 @@ describe('Name of the group', () => {
       }
     }
     const response = await sut.handle(httpRequest)
-    expect(response.statusCode).toBe(400)
-    expect(response.body).toEqual(new Error('Missing param: name'))
+    expect(response).toEqual(badRequest(new MissingParamError('name')))
   })
 
   it('should return 400 when email is not provided', async () => {
@@ -25,8 +27,7 @@ describe('Name of the group', () => {
       }
     }
     const response = await sut.handle(httpRequest)
-    expect(response.statusCode).toBe(400)
-    expect(response.body).toEqual(new Error('Missing param: email'))
+    expect(response).toEqual(badRequest(new MissingParamError('email')))
   })
 
   it('should return 400 when password is not provided', async () => {
@@ -40,7 +41,7 @@ describe('Name of the group', () => {
     }
     const response = await sut.handle(httpRequest)
     expect(response.statusCode).toBe(400)
-    expect(response.body).toEqual(new Error('Missing param: password'))
+    expect(response).toEqual(badRequest(new MissingParamError('password')))
   })
 
   it('should return 400 when password confirmation is not provided', async () => {
@@ -53,8 +54,7 @@ describe('Name of the group', () => {
       }
     }
     const response = await sut.handle(httpRequest)
-    expect(response.statusCode).toBe(400)
-    expect(response.body).toEqual(new Error('Missing param: passwordConfirmation'))
+    expect(response).toEqual(badRequest(new MissingParamError('passwordConfirmation')))
   })
 
   it('should return 400 when password confirmation is fails', async () => {
@@ -69,6 +69,6 @@ describe('Name of the group', () => {
     }
     const response = await sut.handle(httpRequest)
     expect(response.statusCode).toBe(400)
-    expect(response.body).toEqual(new Error('Invalid param: passwordConfirmation'))
+    expect(response.body).toEqual(new InvalidParamError('passwordConfirmation'))
   })
 })
