@@ -7,5 +7,9 @@ export class SignUpController {
         return { statusCode: 400, body: new Error(`Missing param: ${field}`) }
       }
     }
+
+    if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
+      return { statusCode: 400, body: new Error('Invalid param: passwordConfirmation') }
+    }
   }
 }
