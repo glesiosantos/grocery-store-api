@@ -1,6 +1,6 @@
 import { InvalidParamError, MissingParamError } from '../errors'
 import { badRequest } from '../helpers/http/http_helpers'
-import { type Controller } from '../protocols/controller'
+import { Controller } from '../protocols'
 import { SignUpController } from './sign_up_controller'
 
 const makeSut = (): Controller => new SignUpController()
