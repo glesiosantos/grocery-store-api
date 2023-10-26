@@ -1,5 +1,4 @@
-import { InvalidParamError } from '../errors/invalid_param_error'
-import { MissingParamError } from '../errors/missing_param_error'
+import { InvalidParamError, MissingParamError } from '../errors'
 import { badRequest } from '../helpers/http/http_helpers'
 import { type Controller } from '../protocols/controller'
 import { SignUpController } from './sign_up_controller'

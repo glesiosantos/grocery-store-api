@@ -7,6 +7,7 @@
     "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/consistent-type-imports": "off",
     "@typescript-eslint/method-signature-style": "off",
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/space-before-function-paren": "off"
