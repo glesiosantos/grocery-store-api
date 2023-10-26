@@ -1,11 +1,14 @@
 import { InvalidParamError } from '../errors/invalid_param_error'
 import { MissingParamError } from '../errors/missing_param_error'
 import { badRequest } from '../helpers/http/http_helpers'
+import { type Controller } from '../protocols/controller'
 import { SignUpController } from './sign_up_controller'
+
+const makeSut = (): Controller => new SignUpController()
 
 describe('Name of the group', () => {
   it('should return 400 when name is not provided', async () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         email: 'any_email@mail.com',
@@ -18,7 +21,7 @@ describe('Name of the group', () => {
   })
 
   it('should return 400 when email is not provided', async () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -31,7 +34,7 @@ describe('Name of the group', () => {
   })
 
   it('should return 400 when password is not provided', async () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -45,7 +48,7 @@ describe('Name of the group', () => {
   })
 
   it('should return 400 when password confirmation is not provided', async () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -58,7 +61,7 @@ describe('Name of the group', () => {
   })
 
   it('should return 400 when password confirmation is fails', async () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
