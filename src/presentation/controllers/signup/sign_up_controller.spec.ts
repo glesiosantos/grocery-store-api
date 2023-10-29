@@ -28,7 +28,7 @@ const makeAddAccount = (): AddAccount => {
           name: 'valid_name',
           email: 'valid_email@mail.com',
           password: 'hashed_password',
-          createdAt: new Date()
+          createdAt: new Date('2019-10-01T00:00:01.30Z')
         })
       })
     }
@@ -135,6 +135,20 @@ describe('Sign Up Controller', () => {
       name: 'any_name',
       email: 'any_email@mail.com',
       password: 'any_password'
+    })
+  })
+  it('should return 200 when valid data is provided', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle(makeFakeAccountRequest())
+    expect(response).toEqual({
+      statusCode: 200,
+      body: {
+        id: 'valid_id',
+        name: 'valid_name',
+        email: 'valid_email@mail.com',
+        password: 'hashed_password',
+        createdAt: new Date('2019-10-01T00:00:01.30Z')
+      }
     })
   })
 })
