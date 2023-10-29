@@ -1,13 +1,10 @@
-import { AccountModel } from '../../domains/models/account'
-import { AddAccount, AddAccountModel } from '../../domains/usecase/account/add_account'
-import { EmailValidator } from '../../validations/validator/email_validator'
-import { InvalidParamError, MissingParamError } from '../errors'
-import { badRequest, serverError } from '../helpers/http/http_helpers'
-import { HttpRequest } from '../protocols'
+import { AccountModel } from '../../../domains/models/account'
+import { badRequest, serverError } from '../../helpers/http/http_helpers'
 import { SignUpController } from './sign_up_controller'
+import { AddAccount, AddAccountModel, Controller, EmailValidator, HttpRequest, InvalidParamError, MissingParamError } from './sign_up_protocols'
 
 type SutTypes = {
-  sut: SignUpController
+  sut: Controller
   emailValidatorStub: EmailValidator
   addAccountStub: AddAccount
 }
