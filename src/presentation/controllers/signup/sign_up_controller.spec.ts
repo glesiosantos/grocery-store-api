@@ -1,4 +1,5 @@
 import { AccountModel } from '../../../domains/models/account'
+import { LoadAccountByEmail } from '../../../domains/usecase/account/load_account_by_email'
 import { badRequest, serverError } from '../../helpers/http/http_helpers'
 import { SignUpController } from './sign_up_controller'
 import { AddAccount, AddAccountModel, Controller, EmailValidator, HttpRequest, InvalidParamError, MissingParamError } from './sign_up_protocols'
@@ -6,6 +7,7 @@ import { AddAccount, AddAccountModel, Controller, EmailValidator, HttpRequest, I
 type SutTypes = {
   sut: Controller
   emailValidatorStub: EmailValidator
+  loadAccountByEmailStub: LoadAccountByEmail
   addAccountStub: AddAccount
 }
 
@@ -19,6 +21,15 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub()
 }
 
+const makeLoadAccountByEmail = (): LoadAccountByEmail => {
+  class LoadAccountByEmailStub implements LoadAccountByEmail {
+    async loadByEmail(email: string): Promise<AccountModel | null> {
+      return new Promise(resolve => { resolve(null) })
+    }
+  }
+
+  return new LoadAccountByEmailStub()
+}
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
     async add(data: AddAccountModel): Promise<AccountModel> {
@@ -48,9 +59,10 @@ const makeFakeAccountRequest = (): HttpRequest => ({
 
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator()
+  const loadAccountByEmailStub = makeLoadAccountByEmail()
   const addAccountStub = makeAddAccount()
-  const sut = new SignUpController(emailValidatorStub, addAccountStub)
-  return { sut, emailValidatorStub, addAccountStub }
+  const sut = new SignUpController(emailValidatorStub, loadAccountByEmailStub, addAccountStub)
+  return { sut, emailValidatorStub, loadAccountByEmailStub, addAccountStub }
 }
 
 describe('Sign Up Controller', () => {
@@ -116,11 +128,18 @@ describe('Sign Up Controller', () => {
     expect(response).toEqual(serverError())
   })
 
+  it('should calls LoadAccountByEmail wiht correct values ', async () => {
+    const { sut, loadAccountByEmailStub } = makeSut()
+    const loadByEmailSpy = jest.spyOn(loadAccountByEmailStub, 'loadByEmail')
+    await sut.handle(makeFakeAccountRequest())
+    expect(loadByEmailSpy).toHaveBeenCalledWith('any_email@mail.com')
+  })
+
   it('should calls AddAccount wiht correct values ', async () => {
     const { sut, addAccountStub } = makeSut()
-    const addStub = jest.spyOn(addAccountStub, 'add')
+    const addSpy = jest.spyOn(addAccountStub, 'add')
     await sut.handle(makeFakeAccountRequest())
-    expect(addStub).toHaveBeenCalledWith({
+    expect(addSpy).toHaveBeenCalledWith({
       name: 'any_name',
       email: 'any_email@mail.com',
       password: 'any_password'
