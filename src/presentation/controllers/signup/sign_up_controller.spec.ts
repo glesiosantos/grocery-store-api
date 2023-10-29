@@ -2,7 +2,7 @@ import { AccountModel } from '../../../domains/models/account'
 import { LoadAccountByEmail } from '../../../domains/usecase/account/load_account_by_email'
 import { badRequest, serverError } from '../../helpers/http/http_helpers'
 import { SignUpController } from './sign_up_controller'
-import { AddAccount, AddAccountModel, Controller, EmailValidator, HttpRequest, InvalidParamError, MissingParamError } from './sign_up_protocols'
+import { AddAccount, AddAccountModel, Controller, DuplicatedParamError, EmailValidator, HttpRequest, InvalidParamError, MissingParamError } from './sign_up_protocols'
 
 type SutTypes = {
   sut: Controller
@@ -133,6 +133,22 @@ describe('Sign Up Controller', () => {
     const loadByEmailSpy = jest.spyOn(loadAccountByEmailStub, 'loadByEmail')
     await sut.handle(makeFakeAccountRequest())
     expect(loadByEmailSpy).toHaveBeenCalledWith('any_email@mail.com')
+  })
+
+  it('should return an error when LoadAccountByEmail return an account', async () => {
+    const { sut, loadAccountByEmailStub } = makeSut()
+    jest.spyOn(loadAccountByEmailStub, 'loadByEmail').mockReturnValueOnce(new Promise(resolve => {
+      resolve({
+        id: 'valid_id',
+        name: 'valid_name',
+        email: 'valid_email@mail.com',
+        password: 'hashed_password',
+        createdAt: new Date('2019-10-01T00:00:01.30Z')
+      })
+    }))
+
+    const response = await sut.handle(makeFakeAccountRequest())
+    expect(response).toEqual(badRequest(new DuplicatedParamError('email', makeFakeAccountRequest().body.email)))
   })
 
   it('should calls AddAccount wiht correct values ', async () => {
