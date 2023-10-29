@@ -151,6 +151,13 @@ describe('Sign Up Controller', () => {
     expect(response).toEqual(badRequest(new DuplicatedParamError('email', makeFakeAccountRequest().body.email)))
   })
 
+  it('should return 500 when LoadAccountByEmail throws', async () => {
+    const { sut, loadAccountByEmailStub } = makeSut()
+    jest.spyOn(loadAccountByEmailStub, 'loadByEmail').mockImplementationOnce(() => { throw new Error() })
+    const response = await sut.handle(makeFakeAccountRequest())
+    expect(response).toEqual(serverError())
+  })
+
   it('should calls AddAccount wiht correct values ', async () => {
     const { sut, addAccountStub } = makeSut()
     const addSpy = jest.spyOn(addAccountStub, 'add')
@@ -164,14 +171,11 @@ describe('Sign Up Controller', () => {
 
   it('should return 500 when AddAccount throws', async () => {
     const { sut, addAccountStub } = makeSut()
-    const addStub = jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => { throw new Error() })
-    await sut.handle(makeFakeAccountRequest())
-    expect(addStub).toHaveBeenCalledWith({
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password'
-    })
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => { throw new Error() })
+    const response = await sut.handle(makeFakeAccountRequest())
+    expect(response).toEqual(serverError())
   })
+
   it('should return 200 when valid data is provided', async () => {
     const { sut } = makeSut()
     const response = await sut.handle(makeFakeAccountRequest())
