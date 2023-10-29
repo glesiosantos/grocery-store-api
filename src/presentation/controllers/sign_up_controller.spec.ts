@@ -1,3 +1,5 @@
+import { AccountModel } from '../../domains/models/account'
+import { AddAccount, AddAccountModel } from '../../domains/usecase/account/add_account'
 import { EmailValidator } from '../../validations/validator/email_validator'
 import { InvalidParamError, MissingParamError } from '../errors'
 import { badRequest, serverError } from '../helpers/http/http_helpers'
@@ -7,6 +9,7 @@ import { SignUpController } from './sign_up_controller'
 type SutTypes = {
   sut: SignUpController
   emailValidatorStub: EmailValidator
+  addAccountStub: AddAccount
 }
 
 const makeEmailValidator = (): EmailValidator => {
@@ -17,6 +20,24 @@ const makeEmailValidator = (): EmailValidator => {
   }
 
   return new EmailValidatorStub()
+}
+
+const makeAddAccount = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    async add(data: AddAccountModel): Promise<AccountModel> {
+      return new Promise(resolve => {
+        resolve({
+          id: 'valid_id',
+          name: 'valid_name',
+          email: 'valid_email@mail.com',
+          password: 'hashed_password',
+          createdAt: new Date()
+        })
+      })
+    }
+  }
+
+  return new AddAccountStub()
 }
 
 const makeFakeAccountRequest = (): HttpRequest => ({
@@ -30,8 +51,9 @@ const makeFakeAccountRequest = (): HttpRequest => ({
 
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator()
-  const sut = new SignUpController(emailValidatorStub)
-  return { sut, emailValidatorStub }
+  const addAccountStub = makeAddAccount()
+  const sut = new SignUpController(emailValidatorStub, addAccountStub)
+  return { sut, emailValidatorStub, addAccountStub }
 }
 
 describe('Sign Up Controller', () => {
@@ -95,5 +117,16 @@ describe('Sign Up Controller', () => {
     jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => { throw new Error() })
     const response = await sut.handle(makeFakeAccountRequest())
     expect(response).toEqual(serverError())
+  })
+
+  it('should calls AddAccount wiht correct values ', async () => {
+    const { sut, addAccountStub } = makeSut()
+    const addStub = jest.spyOn(addAccountStub, 'add')
+    await sut.handle(makeFakeAccountRequest())
+    expect(addStub).toHaveBeenCalledWith({
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'any_password'
+    })
   })
 })
