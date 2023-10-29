@@ -1,6 +1,6 @@
 import { LoadAccountByEmail } from '../../../domains/usecase/account/load_account_by_email'
 import { badRequest, serverError } from '../../helpers/http/http_helpers'
-import { AddAccount, Controller, EmailValidator, HttpRequest, HttpResponse, InvalidParamError, MissingParamError } from './sign_up_protocols'
+import { AddAccount, Controller, DuplicatedParamError, EmailValidator, HttpRequest, HttpResponse, InvalidParamError, MissingParamError } from './sign_up_protocols'
 
 export class SignUpController implements Controller {
   constructor(
@@ -29,7 +29,11 @@ export class SignUpController implements Controller {
         return badRequest(new InvalidParamError('email'))
       }
 
-      await this.loadAccountByEmail.loadByEmail(email)
+      const existAccount = await this.loadAccountByEmail.loadByEmail(email)
+
+      if (existAccount) {
+        return badRequest(new DuplicatedParamError('email', email))
+      }
 
       const account = await this.addAccount.add({ name, email, password })
 
