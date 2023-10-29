@@ -25,9 +25,9 @@ export class SignUpController implements Controller {
         return badRequest(new InvalidParamError('email'))
       }
 
-      await this.addAccount.add({ name, email, password })
+      const account = await this.addAccount.add({ name, email, password })
 
-      return { statusCode: 200, body: null }
+      return { statusCode: 200, body: account }
     } catch (error) {
       return serverError()
     }
