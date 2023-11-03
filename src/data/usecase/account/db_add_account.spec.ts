@@ -1,7 +1,7 @@
 import { AccountModel } from '../../../domains/models/account'
 import { AddAccount, AddAccountModel } from '../../../domains/usecase/account/add_account'
-import { AddAccountRepository } from '../protocols/add_account_repository'
-import { Encrypter } from '../protocols/encrypter'
+import { AddAccountRepository } from '../../protocols/add_account_repository'
+import { Encrypter } from '../../protocols/encrypter'
 import { DbAddAccount } from './db_add_account'
 
 const makeAccountDataFake = (): AddAccountModel => ({
