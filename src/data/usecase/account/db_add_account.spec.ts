@@ -16,7 +16,7 @@ const makeEncrypter = (): Encrypter => {
 
 const makeAddAccountRepository = (): AddAccountRepository => {
   class AddAccountRepositoryStub implements AddAccountRepository {
-    async add(data: AccountModel): Promise<AccountModel | null> {
+    async add(data: AccountModel): Promise<AccountModel> {
       const fakeAccount = {
         id: 'any_id',
         name: 'any_name',
@@ -100,5 +100,23 @@ describe('DB Add Account usecase', () => {
 
     const promise = sut.add(accountDataFake)
     await expect(promise).rejects.toThrow()
+  })
+
+  it('should an account on successed', async () => {
+    const { sut } = makeSut()
+    const accountDataFake = {
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'any_password'
+    }
+
+    const account = await sut.add(accountDataFake)
+    expect(account).toEqual({
+      id: 'any_id',
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'hashed_password',
+      createdAt: new Date('2019-10-01T00:00:01.30Z')
+    })
   })
 })
